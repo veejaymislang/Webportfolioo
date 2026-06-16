@@ -22,6 +22,19 @@ app.innerHTML = `
   ${Contact()}
 `;
 
+// Force splash screen to hide and show content after 5 seconds
+setTimeout(() => {
+  const splashScreen = document.getElementById('splash-screen');
+  if (splashScreen) {
+    splashScreen.classList.add('hidden');
+    splashScreen.style.display = 'none';
+  }
+  const appDiv = document.querySelector('#app');
+  if (appDiv) {
+    appDiv.style.display = 'block';
+  }
+}, 5000);
+
 // Initialize Features
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Splash Screen element (animation hides it when ready)
