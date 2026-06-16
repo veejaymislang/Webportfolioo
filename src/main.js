@@ -7,86 +7,85 @@ import { Projects, initProjects } from './components/Projects.js';
 import { Certificates } from './components/Certificates.js';
 import { Contact } from './components/Contact.js';
 import { initCustomCursor } from './components/CustomCursor.js';
-import { initAnimations } from './animations.js';
 import { initBackground } from './background.js';
 
-// Assemble Application
-const app = document.querySelector('#app');
-app.innerHTML = `
-  ${Navbar()}
-  ${Hero()}
-  ${About()}
-  ${Skills()}
-  ${Projects()}
-  ${Certificates()}
-  ${Contact()}
-`;
+try {
+  // Assemble Application
+  const app = document.querySelector('#app');
+  if (app) {
+    app.innerHTML = `
+      ${Navbar()}
+      ${Hero()}
+      ${About()}
+      ${Skills()}
+      ${Projects()}
+      ${Certificates()}
+      ${Contact()}
+    `;
+  }
+} catch (e) {
+  console.error('Error rendering components:', e);
+}
 
-// Force splash screen to hide and show content after 5 seconds
-setTimeout(() => {
-  const splashScreen = document.getElementById('splash-screen');
-  if (splashScreen) {
-    splashScreen.classList.add('hidden');
-    splashScreen.style.display = 'none';
-  }
-  const appDiv = document.querySelector('#app');
-  if (appDiv) {
-    appDiv.style.display = 'block';
-  }
-}, 5000);
+// Immediately hide splash screen
+const splashScreen = document.getElementById('splash-screen');
+if (splashScreen) {
+  splashScreen.classList.add('hidden');
+  splashScreen.style.display = 'none';
+}
 
 // Initialize Features
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Splash Screen element (animation hides it when ready)
-  const splashScreen = document.getElementById('splash-screen');
+  try {
+    // Initialize background and cursor
+    initBackground();
+    initCustomCursor();
 
-  // 2. Custom Cursor & Background
-  initCustomCursor();
-  initBackground();
+    // Scroll Animations (Intersection Observer)
+    const fadeElements = document.querySelectorAll('.fade-up');
+    
+    const scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-  // 3. Scroll Animations (Intersection Observer)
-  const fadeElements = document.querySelectorAll('.fade-up');
-  
-  const scrollObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      } else {
-        entry.target.classList.remove('visible');
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    fadeElements.forEach(el => scrollObserver.observe(el));
 
-  fadeElements.forEach(el => scrollObserver.observe(el));
-
-  // 4. Navbar scroll effect
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      navbar.classList.add('scrolled');
-    } else {
-      navbar.classList.remove('scrolled');
+    // Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
     }
-  });
 
-  // Smooth scroll for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetId = this.getAttribute('href').substring(1);
-      const target = document.getElementById(targetId);
-      if (target) {
-        window.scrollTo({
-          top: target.offsetTop,
-          behavior: 'smooth'
-        });
-      }
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const target = document.getElementById(targetId);
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop,
+            behavior: 'smooth'
+          });
+        }
+      });
     });
-  });
 
-  // 5. Init site animations (GSAP)
-  initAnimations();
-
-  // 6. Init Projects Details Modal
-  initProjects();
+    // Init Projects Details Modal
+    initProjects();
+  } catch (e) {
+    console.error('Error during initialization:', e);
+  }
 });
