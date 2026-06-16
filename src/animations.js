@@ -63,6 +63,13 @@ export function initAnimations() {
 
     // Fade in persistent footer with name after splash hides
     tl.to('#site-footer', { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power2.out' }, '+=0.05');
+    
+    // Fallback: ensure splash screen hides after 4 seconds if animation fails
+    setTimeout(() => {
+      if (!splashScreen.classList.contains('hidden')) {
+        splashScreen.classList.add('hidden');
+      }
+    }, 4000);
 
     // Interactive cursor-driven parallax for shapes and logo
     let rect;
